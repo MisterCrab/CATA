@@ -15480,61 +15480,58 @@ end
 -- Specializations
 -------------------------------------------------------------------------------
 local classSpecIds = {
-	-- New Cata
-	DRUID 				= {752,750,748},
-	HUNTER 				= {811,807,809},
-	MAGE 				= {799,851,823},
-	PALADIN 			= {831,839,855},
-	PRIEST 				= {760,813,795},
-	ROGUE 				= {182,181,183},
-	SHAMAN 				= {261,263,262},
-	WARLOCK 			= {871,867,865},
-	WARRIOR 			= {746,815,845},
-	DEATHKNIGHT 		= {398,399,400},
+	DRUID 				= {102,103,105},
+	HUNTER 				= {253,254,255},
+	MAGE 				= {62,63,64},
+	PALADIN 			= {65,66,70},
+	PRIEST 				= {256,257,258},
+	ROGUE 				= {259,260,261},
+	SHAMAN 				= {262,263,264},
+	WARLOCK 			= {265,266,267},
+	WARRIOR 			= {71,72,73},
+	DEATHKNIGHT 		= {250,251,252},
 }; ActionData.classSpecIds = classSpecIds
 local specs = {
 	-- 4th index is localizedName of the specialization 
+	[253]	= {"Beast Mastery", 461112, "DAMAGER"},
+	[254]	= {"Marksmanship", 236179, "DAMAGER"},
+	[255]	= {"Survival", 461113, "DAMAGER"},
 
-	-- New Cata
-	[811]	= {"Beast Mastery", 461112, "DAMAGER"},
-	[807]	= {"Marksmanship", 236179, "DAMAGER"},
-	[809]	= {"Survival", 461113, "DAMAGER"},
+	[71]	= {"Arms", 132355, "DAMAGER"},
+	[72]	= {"Fury", 132347, "DAMAGER"},
+	[73]	= {"Protection", 132341, "TANK"},
 
-	[746]	= {"Arms", 132355, "DAMAGER"},
-	[815]	= {"Fury", 132347, "DAMAGER"},
-	[845]	= {"Protection", 132341, "TANK"},
+	[65]	= {"Holy", 135920, "HEALER"},
+	[66]	= {"Protection", 236264, "TANK"},
+	[70]	= {"Retribution", 135873, "DAMAGER"},
 
-	[831]	= {"Holy", 135920, "HEALER"},
-	[839]	= {"Protection", 236264, "TANK"},
-	[855]	= {"Retribution", 135873, "DAMAGER"},
+	[62]	= {"Arcane", 135932, "DAMAGER"},
+	[63]	= {"Fire", 135810, "DAMAGER"},
+	[64]	= {"Frost", 135846, "DAMAGER"},
 
-	[799]	= {"Arcane", 135932, "DAMAGER"},
-	[851]	= {"Fire", 135810, "DAMAGER"},
-	[823]	= {"Frost", 135846, "DAMAGER"},
+	[256]	= {"Discipline", 135940, "HEALER"},
+	[257]	= {"Holy", 237542, "HEALER"},
+	[258]	= {"Shadow", 136207, "DAMAGER"},
 
-	[760]	= {"Discipline", 135940, "HEALER"},
-	[813]	= {"Holy", 237542, "HEALER"},
-	[795]	= {"Shadow", 136207, "DAMAGER"},
+	[265]	= {"Affliction", 136145, "DAMAGER"},
+	[266]	= {"Demonology", 136172, "DAMAGER"},
+	[267]	= {"Destruction", 136186, "DAMAGER"},
 
-	[871]	= {"Affliction", 136145, "DAMAGER"},
-	[867]	= {"Demonology", 136172, "DAMAGER"},
-	[865]	= {"Destruction", 136186, "DAMAGER"},
+	[102]	= {"Balance", 136096, "DAMAGER"},
+	[103]	= {"Feral", 132115, "DAMAGER"},
+	[105]	= {"Restoration", 136041, "HEALER"},
 
-	[752]	= {"Balance", 136096, "DAMAGER"},
-	[750]	= {"Feral", 132115, "DAMAGER"},
-	[748]	= {"Restoration", 136041, "HEALER"},
-
-	[261]	= {"Elemental", 136048, "DAMAGER"},
+	[262]	= {"Elemental", 136048, "DAMAGER"},
 	[263]	= {"Enhancement", 237581, "DAMAGER"},
-	[262]	= {"Restoration", 136052, "HEALER"},
+	[264]	= {"Restoration", 136052, "HEALER"},
 
-	[182]	= {"Assassination", 236270, "DAMAGER"},
-	[181]	= {"Combat", 236286, "DAMAGER"},
-	[183]	= {"Subtlety", 132320, "DAMAGER"},
+	[259]	= {"Assassination", 236270, "DAMAGER"},
+	[260]	= {"Combat", 236286, "DAMAGER"},
+	[261]	= {"Subtlety", 132320, "DAMAGER"},
 	
-	[398]	= {"Blood", 135770, "TANK"},
-	[399]	= {"Frost", 135773, "DAMAGER"},
-	[400]	= {"Unholy", 135775, "DAMAGER"},
+	[250]	= {"Blood", 135770, "TANK"},
+	[251]	= {"Frost", 135773, "DAMAGER"},
+	[252]	= {"Unholy", 135775, "DAMAGER"},
 }; ActionData.specs = specs
 
 function Action.GetNumSpecializations()
