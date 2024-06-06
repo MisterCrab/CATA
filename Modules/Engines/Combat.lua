@@ -2676,7 +2676,8 @@ A.UnitCooldown 									= {
 }
  
 -- Tracks Freezing Trap 
-A.UnitCooldown:Register(CONST.SPELLID_FREEZING_TRAP, 15)
+A.UnitCooldown:Register(CONST.SPELLID_FREEZING_TRAP, 30)
+A.UnitCooldown:Register(CONST.SPELLID_FREEZING_TRAP2, 30)
 
 -------------------------------------------------------------------------------
 -- API: LossOfControl
