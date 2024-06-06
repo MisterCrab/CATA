@@ -524,7 +524,7 @@ local function CreateRankFrame(name, anchor, x, y)
 	frame:SetSize(1, 1)
 	frame:SetScale(1)
 	frame:SetPoint(anchor, x, y)
-	frame.texture = frame:CreateTexture(nil, "HIGHLIGHT")
+	frame.texture = frame:CreateTexture(nil, "OVERLAY")
 	frame.texture:SetAllPoints(true)
 	frame.texture:SetColorTexture(0, 0, 0, 1.0)
 	return frame
