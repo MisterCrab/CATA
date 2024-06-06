@@ -7116,7 +7116,7 @@ local LineOfSight = {
 				else
 					UnitFrame = NamePlateFrame.UnitFrame					
 					if UnitFrame and UnitFrame.unitExists and UnitIsUnit(UnitFrame.unit, unitID) then
-						return UnitFrame:GetEffectiveAlpha() <= 0.41
+						return UnitFrame:GetEffectiveAlpha() <= 0.400001
 					end		
 				end 
 			end 
