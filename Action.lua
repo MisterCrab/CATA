@@ -11386,7 +11386,7 @@ function Action.ToggleMainUI()
 			local Scroll, ScrollTable, Key, SetQueue, SetBlocker, LuaButton, LuaEditor, QLuaButton, QLuaEditor, AutoHidden
 			
 			local AutoHiddenEvents				= {
-				--["ACTIVE_TALENT_GROUP_CHANGED"]	= true, -- Not exist in Classic 
+				["ACTIVE_TALENT_GROUP_CHANGED"]	= true, 
 				["BAG_UPDATE"]					= true,
 				["BAG_UPDATE_COOLDOWN"]			= true,
 				["PLAYER_EQUIPMENT_CHANGED"]	= true,
@@ -11661,6 +11661,11 @@ function Action.ToggleMainUI()
 						end 
 					end		
 					ScrollTable:ClearSelection() 
+				end 
+			end)
+			TMW:RegisterCallback("TMW_ACTION_PLAYER_SPECIALIZATION_CHANGED", function(callbackEvent)
+				if ScrollTable:IsVisible() then 
+					ScrollTable:MakeUpdate() -- Update Actions list if learned/unlearned points and if talent tree is changed
 				end 
 			end)
 			
