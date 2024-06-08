@@ -9457,7 +9457,6 @@ function Action.ToggleMainUI()
 		end)
 				
 		MainUI:EnableKeyboard(true)
-		MainUI:SetPropagateKeyboardInput(true)
 		-- Catches the game menu bind just before it fires.
 		MainUI:SetScript("OnKeyDown", function(self, Key)				
 			if GetBindingFromClick(Key) == "TOGGLEGAMEMENU" and self:IsShown() then 
@@ -14170,7 +14169,7 @@ function Action.ToggleMainUI()
 				end
 				
 				for k, v in pairs(db) do 										
-					if k == "PredictOptions" then 						
+					if k == "PredictOptions" and PredictOptions then 						
 						local isChanged 
 						for k1, v1 in ipairs(v) do 
 							if PredictOptions.value[k1] ~= v1 then 
@@ -14185,7 +14184,7 @@ function Action.ToggleMainUI()
 						end 
 					end 
 					
-					if k == "SelectStopOptions" then 
+					if k == "SelectStopOptions" and SelectStopOptions then 
 						local isChanged 
 						for k1, v1 in ipairs(v) do 
 							if SelectStopOptions.value[k1] ~= v1 then 
@@ -14200,14 +14199,14 @@ function Action.ToggleMainUI()
 						end 						
 					end 	
 					
-					if k == "SelectSortMethod" then
+					if k == "SelectSortMethod" and SelectSortMethod then
 						if SelectSortMethod:GetValue() ~= v then 
 							SelectSortMethod:SetValue(v) 
 							-- OnValueChanged will set specDB and make Action.Print 
 						end 
 					end 
 					
-					if k == "AfterTargetEnemyOrBossDelay" then 
+					if k == "AfterTargetEnemyOrBossDelay" and AfterTargetEnemyOrBossDelay then 
 						if AfterTargetEnemyOrBossDelay:GetValue() ~= v then 
 							AfterTargetEnemyOrBossDelay:SetValue(v) 
 							-- OnValueChanged will set specDB
@@ -14215,7 +14214,7 @@ function Action.ToggleMainUI()
 						end 
 					end 
 					
-					if k == "AfterMouseoverEnemyDelay" then 
+					if k == "AfterMouseoverEnemyDelay" and AfterMouseoverEnemyDelay then 
 						if AfterMouseoverEnemyDelay:GetValue() ~= v then 
 							AfterMouseoverEnemyDelay:SetValue(v) 
 							-- OnValueChanged will set specDB
@@ -14223,7 +14222,7 @@ function Action.ToggleMainUI()
 						end 
 					end 
 					
-					if k == "SelectPets" then 
+					if k == "SelectPets" and SelectPets then 
 						if SelectPets:GetChecked() ~= v then 
 							SelectPets:SetChecked(v)
 							specDB[k] = v 
@@ -14231,7 +14230,7 @@ function Action.ToggleMainUI()
 						end 
 					end 
 					
-					if k == "SelectResurrects" then 
+					if k == "SelectResurrects" and SelectResurrects then 
 						if SelectResurrects:GetChecked() ~= v then 
 							SelectResurrects:SetChecked(v)
 							specDB[k] = v 
