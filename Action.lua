@@ -7008,18 +7008,27 @@ function Action.RacialIsON(self)
 	return A_GetToggle(1, "Racial") and (not self or self:IsExists())
 end 
 
--- [1] ReTarget
+-- [1] ReTarget // ReFocus
 local Re; Re = {
-	Units = { "arena1", "arena2", "arena3" },
+	Units = { "arena1", "arena2", "arena3", "arena4", "arena5" },
 	-- Textures 
 	target = {
 		["arena1"] = ActionConst.PVP_TARGET_ARENA1,
 		["arena2"] = ActionConst.PVP_TARGET_ARENA2,
 		["arena3"] = ActionConst.PVP_TARGET_ARENA3,
+		["arena4"] = ActionConst.PVP_TARGET_ARENA4,
+		["arena5"] = ActionConst.PVP_TARGET_ARENA5,
 	},
+	focus = {
+		["arena1"] = ActionConst.PVP_FOCUS_ARENA1,
+		["arena2"] = ActionConst.PVP_FOCUS_ARENA2,
+		["arena3"] = ActionConst.PVP_FOCUS_ARENA3,
+		["arena4"] = ActionConst.PVP_FOCUS_ARENA4,
+		["arena5"] = ActionConst.PVP_FOCUS_ARENA5,
+	},	
 	-- OnEvent 
 	PLAYER_TARGET_CHANGED = function()
-		if Action.Zone == "pvp" then 			
+		if (Action.Zone == "arena" or Action.Zone == "pvp") then 			
 			if UnitExists("target") then 
 				Re.LastTargetIsExists = true 
 				for i = 1, #Re.Units do
@@ -7034,25 +7043,56 @@ local Re; Re = {
 			end 
 		end 		
 	end,	
-	-- OnInitialize, OnProfileChanged
-	Reset 			= function(self)		
-		A_Listener:Remove("ACTION_EVENT_RE", 		"PLAYER_TARGET_CHANGED")
-		self.LastTargetIsExists	= nil
-		self.LastTargetUnitID 	= nil 
-		self.LastTargetTexture 	= nil 	
-		
-		Action.Re:ClearTarget()
+	PLAYER_FOCUS_CHANGED = function()
+		if (Action.Zone == "arena" or Action.Zone == "pvp") then 
+			if UnitExists("focus") then 
+				Re.LastFocusIsExists = true 
+				for i = 1, #Re.Units do 
+					if UnitIsUnit("focus", Re.Units[i]) then 
+						Re.LastFocusUnitID = Re.Units[i]
+						Re.LastFocusTexture = Re.focus[Re.LastFocusUnitID]
+						break
+					end 
+				end 
+			else
+				Re.LastFocusIsExists = false 
+			end 
+		end 
 	end,
-	Initialize		= function(self)
+	-- OnInitialize, OnProfileChanged
+	Reset 			= function(self)	
+		A_Listener:Remove("ACTION_EVENT_RE", 	 "PLAYER_TARGET_CHANGED")
+		A_Listener:Remove("ACTION_EVENT_RE", 	 "PLAYER_FOCUS_CHANGED")
+		self.LastTargetIsExists	 	= nil
+		self.LastTargetUnitID 	 	= nil 
+		self.LastTargetTexture 	 	= nil 
+		self.LastFocusIsExists 	 	= nil 
+		self.LastFocusUnitID 	 	= nil
+		self.LastFocusTexture 	 	= nil
+
+		Action.Re:ClearTarget()
+		Action.Re:ClearFocus()
+	end,
+	Initialize		= function(self)	
 		if A_GetToggle(1, "ReTarget") then 
-			A_Listener:Add("ACTION_EVENT_RE", 		"PLAYER_TARGET_CHANGED", self.PLAYER_TARGET_CHANGED)
+			A_Listener:Add(   "ACTION_EVENT_RE", "PLAYER_TARGET_CHANGED", self.PLAYER_TARGET_CHANGED)
 			self.PLAYER_TARGET_CHANGED()
 		else 
-			A_Listener:Remove("ACTION_EVENT_RE", 	"PLAYER_TARGET_CHANGED")
+			A_Listener:Remove("ACTION_EVENT_RE", "PLAYER_TARGET_CHANGED")
 			self.LastTargetIsExists	= nil
 			self.LastTargetUnitID 	= nil 
 			self.LastTargetTexture 	= nil 			
 		end 
+		
+		if A_GetToggle(1, "ReFocus") then 
+			A_Listener:Add(   "ACTION_EVENT_RE", "PLAYER_FOCUS_CHANGED",  self.PLAYER_FOCUS_CHANGED)
+			self.PLAYER_FOCUS_CHANGED()
+		else 
+			A_Listener:Remove("ACTION_EVENT_RE", "PLAYER_FOCUS_CHANGED")
+			self.LastFocusIsExists 	= nil 
+			self.LastFocusUnitID 	= nil
+			self.LastFocusTexture 	= nil			
+		end 		
 	end,
 }
 
@@ -7084,6 +7124,36 @@ Action.Re = {
 				return self:ClearTarget() 
 			else 
 				return Action:Show(icon, Re.ManualTargetTexture)
+			end 
+		end 
+	end,
+	-- Focus 
+	SetFocus 	= function(self, unitID)
+		-- Creates schedule to set in focus the 'unitID'
+		if not Re.focus[unitID] then 
+			error("Action.Re:SetFocus must have valid for own API the 'unitID' param. Input: " .. (unitID or "nil"))
+			return 
+		end
+		
+		Re.ManualFocusUnitID 	= unitID
+		Re.ManualFocusTexture 	= Re.focus[unitID]
+	end,	
+	ClearFocus 	= function(self)
+		Re.ManualFocusUnitID 	= nil 
+		Re.ManualFocusTexture 	= nil 		
+	end,
+	CanFocus	= function(self, icon)
+		-- @return boolean 
+		-- Note: Only for internal use for Core.lua
+		if not Re.LastFocusIsExists and Re.LastFocusTexture and UnitExists(Re.LastFocusUnitID) then 
+			return Action:Show(icon, Re.LastFocusTexture)
+		end 
+		
+		if Re.ManualFocusTexture and UnitExists(Re.ManualFocusUnitID) then 
+			if UnitIsUnit("focus", Re.ManualFocusUnitID) then 				
+				return self:ClearFocus() 
+			else 
+				return Action:Show(icon, Re.ManualFocusTexture)
 			end 
 		end 
 	end,
