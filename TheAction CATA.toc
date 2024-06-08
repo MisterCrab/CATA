@@ -29,7 +29,6 @@ Lib\StdUI\StdUi.xml
 
 # Classic Libs 
 Lib\DRList-1.0\DRList-1.0.xml
-Lib\LibHealComm-4.0\LibHealComm-4.0.xml
 Lib\LibSpellLock.lua
 Lib\LibAuraTypes.lua
 Lib\GetTotemInfo.lua
@@ -62,7 +61,6 @@ Modules\Misc\ElvUI.lua
 Modules\Misc\HeroLib.lua
 Modules\Misc\PrevSpell.lua 
 Modules\Misc\DRList.lua
-Modules\Misc\LibHealComm.lua
 Modules\Misc\StdUi.lua
 Modules\Misc\Toaster.lua
 Modules\Misc\ProfileSession.lua

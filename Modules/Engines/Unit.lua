@@ -17,7 +17,6 @@ local AuraVariableNumber 					= Env.AuraVariableNumber
 local strlowerCache  						= TMW.strlowerCache
 
 local LibStub								= _G.LibStub
-local HealComm 								= LibStub("LibHealComm-4.0", true) -- Note: Leave it with true in case if will need to disable lib, seems lib causing unexpected lua errors in PvP 
 local LibRangeCheck  						= LibStub("LibRangeCheck-3.0")
 local LibBossIDs							= LibStub("LibBossIDs-1.0").BossIDs
 
@@ -49,8 +48,7 @@ local TeamCacheEnemyIndexToPLAYERs			= TeamCacheEnemy.IndexToPLAYERs
 local TeamCacheEnemyIndexToPETs				= TeamCacheEnemy.IndexToPETs
 local ActiveUnitPlates						= MultiUnits:GetActiveUnitPlates()
 local ActiveUnitPlatesAny					= MultiUnits:GetActiveUnitPlatesAny()
-	  
-local ALL_HEALS								= HealComm and HealComm.ALL_HEALS	  
+
 local CACHE_DEFAULT_TIMER_UNIT				= CONST.CACHE_DEFAULT_TIMER_UNIT
 
 local GameLocale 							= A.FormatGameLocale(_G.GetLocale())	  
@@ -59,9 +57,9 @@ local GetUnitSpeed							= _G.GetUnitSpeed
 local GetSpellInfo							= _G.GetSpellInfo
 local GetPartyAssignment 					= _G.GetPartyAssignment	  
 local UnitIsUnit, UnitPlayerOrPetInRaid, UnitInAnyGroup, UnitPlayerOrPetInParty, UnitInRange, UnitLevel, UnitRace, UnitClass, UnitClassification, UnitExists, UnitIsConnected, UnitIsCharmed, UnitIsGhost, UnitIsDeadOrGhost, UnitIsFeignDeath, UnitIsPlayer, UnitPlayerControlled, UnitCanAttack, UnitIsEnemy, UnitAttackSpeed,
-	  UnitPowerType, UnitPowerMax, UnitPower, UnitName, UnitCanCooperate, UnitCreatureType, UnitCreatureFamily, UnitHealth, UnitHealthMax, UnitGUID, UnitHasIncomingResurrection, UnitIsVisible, UnitDebuff, UnitCastingInfo, UnitChannelInfo =
+	  UnitPowerType, UnitPowerMax, UnitPower, UnitName, UnitCanCooperate, UnitCreatureType, UnitCreatureFamily, UnitHealth, UnitHealthMax, UnitGetIncomingHeals, UnitGUID, UnitHasIncomingResurrection, UnitIsVisible, UnitDebuff, UnitCastingInfo, UnitChannelInfo =
 	  UnitIsUnit, UnitPlayerOrPetInRaid, UnitInAnyGroup, UnitPlayerOrPetInParty, UnitInRange, UnitLevel, UnitRace, UnitClass, UnitClassification, UnitExists, UnitIsConnected, UnitIsCharmed, UnitIsGhost, UnitIsDeadOrGhost, UnitIsFeignDeath, UnitIsPlayer, UnitPlayerControlled, UnitCanAttack, UnitIsEnemy, UnitAttackSpeed,
-	  UnitPowerType, UnitPowerMax, UnitPower, UnitName, UnitCanCooperate, UnitCreatureType, UnitCreatureFamily, UnitHealth, UnitHealthMax, UnitGUID, UnitHasIncomingResurrection, UnitIsVisible, UnitDebuff, UnitCastingInfo, UnitChannelInfo
+	  UnitPowerType, UnitPowerMax, UnitPower, UnitName, UnitCanCooperate, UnitCreatureType, UnitCreatureFamily, UnitHealth, UnitHealthMax, UnitGetIncomingHeals, UnitGUID, UnitHasIncomingResurrection, UnitIsVisible, UnitDebuff, UnitCastingInfo, UnitChannelInfo
 local UnitAura 								= _G.UnitAura	  
 	  
 local UnitThreatSituation					= _G.UnitThreatSituation
@@ -3250,38 +3248,11 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID
 		return UnitHasIncomingResurrection(unitID)
 	end, "UnitID"),
-	GetIncomingHeals						= Cache:Wrap(function(self, castTime, unitGUID)
+	GetIncomingHeals						= Cache:Pass(function(self)
 		-- @return number 
-		-- Nill-able: unitGUID
-		if not HealComm or not castTime or castTime <= 0 then 
-			return 0
-		end 
-		
 		local unitID 						= self.UnitID
-		local GUID 							= unitGUID or UnitGUID(unitID)
-		
-		if not GUID then 
-			return 0 
-		end 
-		
-		return (HealComm:GetOthersHealAmount(GUID, ALL_HEALS, TMW.time + castTime) or 0) * HealComm:GetHealModifier(GUID) -- Better by others since if we will include our heals it will funky use accidentally downrank
-	end, "UnitGUID"),
-	GetIncomingHealsIncSelf					= Cache:Wrap(function(self, castTime, unitGUID)
-		-- @return number 
-		-- Nill-able: unitGUID
-		if not HealComm or not castTime or castTime <= 0 then 
-			return 0
-		end 
-		
-		local unitID 						= self.UnitID
-		local GUID 							= unitGUID or UnitGUID(unitID)
-		
-		if not GUID then 
-			return 0 
-		end 
-		
-		return (HealComm:GetHealAmount(GUID, ALL_HEALS, TMW.time + castTime) or 0) * HealComm:GetHealModifier(GUID) -- Includes self incoming on a unitID 
-	end, "UnitGUID"),
+		return UnitGetIncomingHeals(unitID) or 0
+	end, "UnitID"),
 	GetRange 								= Cache:Wrap(function(self)
 		-- @return number (max), number (min)
 		local unitID 						= self.UnitID
