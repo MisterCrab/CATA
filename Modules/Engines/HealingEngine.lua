@@ -695,7 +695,7 @@ local function OnUpdate()
 		member 							= player  
 		memberGUID 						= TeamCacheFriendlyUNITs[member]	
 		if memberGUID then 
-			--playerGUID					= memberGUID -- Save for future referrence
+			playerGUID					= memberGUID -- Save for future referrence
 			memberData 					= UnitIDs[member]
 			memberData:Setup(member, memberGUID, true)				
 			FrequencyTemp.MHP 			= (FrequencyTemp.MHP or 0) + memberData.MHP 
