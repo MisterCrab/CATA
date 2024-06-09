@@ -2955,10 +2955,10 @@ A.Unit = PseudoClass({
 		-- Nill-able: DR_Tick, if its nil function returns true whenever non-imun drCat is apply able
 		local unitID 						= self.UnitID 
 		if not A.IsInPvP then 
-			return not self(unitID):IsBoss() and InfoControlAbleClassification[self(unitID):Classification()] and (not drCat or self(unitID):GetDR(drCat) > (DR_Tick or 0)) and (drCat ~= "fear" or self(unitID):HasDeBuffs(AuraList.FearImunDeBuffs) == 0)
+			return not self(unitID):IsBoss() and InfoControlAbleClassification[self(unitID):Classification()] and (not drCat or self(unitID):GetDR(drCat) > (drDiminishing or 0))
 		else 
-			return (not drCat or self(unitID):GetDR(drCat) > (DR_Tick or 0)) and (drCat ~= "fear" or self(unitID):HasDeBuffs(AuraList.FearImunDeBuffs) == 0)
-		end 
+			return not drCat or self(unitID):GetDR(drCat) > (drDiminishing or 0)
+		end 		
 	end, "UnitID"),
 	-- CreatureType: Bool extenstion
 	IsUndead								= Cache:Pass(function(self)
