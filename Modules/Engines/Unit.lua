@@ -3571,6 +3571,15 @@ A.Unit = PseudoClass({
 		for i = 1, huge do			
 			spellName, _, spellCount, _, spellDuration, spellExpirationTime, _,_,_, spellID = UnitAura(unitID, i, filter)
 			
+			
+			if type(spellName) == "table" then 		
+				spellCount = spellName.charges
+				spellDuration = spellName.duration
+				spellExpirationTime = spellName.expirationTime
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
+			
 			if not spellName then 
 				break
 			elseif auraTable[spellID] then 
@@ -3601,6 +3610,14 @@ A.Unit = PseudoClass({
 		local _, spellName, spellID, spellCount, spellDuration, spellExpirationTime	
 		for i = 1, huge do			
 			spellName, _, spellCount, _, spellDuration, spellExpirationTime, _,_,_, spellID = UnitAura(unitID, i, filter)
+						
+			if type(spellName) == "table" then 		
+				spellCount = spellName.charges
+				spellDuration = spellName.duration
+				spellExpirationTime = spellName.expirationTime
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
 			
 			if not spellName then 
 				break
@@ -3655,6 +3672,13 @@ A.Unit = PseudoClass({
 		for i = 1, huge do 
 			spellName, _, _, _, spellDuration, spellExpirationTime, _, _, _, spellID = UnitAura(unitID, i, filter)
 			
+			if type(spellName) == "table" then 	
+				spellDuration = spellName.duration
+				spellExpirationTime = spellName.expirationTime
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
+			
 			if not spellName then 
 				break 			
 			elseif AssociativeTables[spell][byID and spellID or spellName] then 
@@ -3687,6 +3711,13 @@ A.Unit = PseudoClass({
 		local _, spellName, spellID, spellCount		
 		for i = 1, huge do 
 			spellName, _, spellCount, _, _, _, _, _, _, spellID = UnitAura(unitID, i, filter)
+			
+			if type(spellName) == "table" then 		
+				spellCount = spellName.charges
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
+			
 			if not spellName then 
 				break 			
 			elseif AssociativeTables[spell][byID and spellID or spellName] then 
@@ -3713,6 +3744,14 @@ A.Unit = PseudoClass({
 		local _, spellName, spellID, spellDuration, spellExpirationTime		
 		for i = 1, huge do 
 			spellName, _, _, _, spellDuration, spellExpirationTime, _, _, _, spellID = UnitAura(unitID, i, filter)
+			
+			if type(spellName) == "table" then 	
+				spellDuration = spellName.duration
+				spellExpirationTime = spellName.expirationTime
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
+			
 			if not spellName then 
 				break 			
 			elseif AssociativeTables[spell][byID and spellID or spellName] then 
@@ -3745,6 +3784,14 @@ A.Unit = PseudoClass({
 		for i = 1, huge do			
 			spellName, _, spellCount, _, spellDuration, spellExpirationTime, _,_,_, spellID = UnitAura(unitID, i, filter)
 			
+			if type(spellName) == "table" then 		
+				spellCount = spellName.charges
+				spellDuration = spellName.duration
+				spellExpirationTime = spellName.expirationTime
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
+			
 			if not spellName then 
 				break 
 			elseif auraTable[spellID] then 
@@ -3773,6 +3820,14 @@ A.Unit = PseudoClass({
 		for i = 1, huge do			
 			spellName, _, spellCount, _, spellDuration, spellExpirationTime, _,_,_, spellID = UnitAura(unitID, i, filter)
 			
+			if type(spellName) == "table" then 		
+				spellCount = spellName.charges
+				spellDuration = spellName.duration
+				spellExpirationTime = spellName.expirationTime
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
+			
 			if not spellName then 
 				break
 			elseif spellName == auraName then 
@@ -3795,6 +3850,14 @@ A.Unit = PseudoClass({
 		local _, spellName, spellID, spellDuration, spellExpirationTime		
 		for i = 1, huge do 
 			spellName, _, _, _, spellDuration, spellExpirationTime, _, _, _, spellID = UnitAura(unitID, i, filter)
+			
+			if type(spellName) == "table" then 		
+				spellDuration = spellName.duration
+				spellExpirationTime = spellName.expirationTime
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
+			
 			if not spellName then 
 				break  
 			elseif AssociativeTables[spell][byID and spellID or spellName] then 
@@ -3818,6 +3881,14 @@ A.Unit = PseudoClass({
 		local _, spellName, spellID, spellDuration, spellExpirationTime		
 		for i = 1, huge do 
 			spellName, _, _, _, spellDuration, spellExpirationTime, _, _, _, spellID = UnitAura(unitID, i, filter)
+
+			if type(spellName) == "table" then 	
+				spellDuration = spellName.duration
+				spellExpirationTime = spellName.expirationTime
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
+			
 			if not spellName then 
 				break 			
 			elseif AssociativeTables[spell][byID and spellID or spellName] then 
@@ -3845,6 +3916,13 @@ A.Unit = PseudoClass({
 		local _, spellName, spellID, spellCount		
 		for i = 1, huge do 
 			spellName, _, spellCount, _, _, _, _, _, _, spellID = UnitAura(unitID, i, filter)
+			
+			if type(spellName) == "table" then 		
+				spellCount = spellName.charges
+				spellID = spellName.spellId
+				spellName = spellName.name
+			end  			
+			
 			if not spellName then 
 				break 			
 			elseif AssociativeTables[spell][byID and spellID or spellName] then 
