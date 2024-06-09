@@ -31,7 +31,6 @@ Lib\StdUI\StdUi.xml
 # Classic Libs 
 Lib\LibSpellLock.lua
 Lib\LibAuraTypes.lua
-Lib\GetTotemInfo.lua
 
 # First constans!
 Modules\Components\Const\Constans.lua
