@@ -35,7 +35,6 @@ local MouseHasFrame							= A.MouseHasFrame
 local UnitInLOS								= A.UnitInLOS
 
 local TeamCache								= A.TeamCache
-local TeamCachethreatData					= TeamCache.threatData
 local TeamCacheFriendly 					= TeamCache.Friendly
 local TeamCacheFriendlyUNITs				= TeamCacheFriendly.UNITs
 local TeamCacheFriendlyGUIDs				= TeamCacheFriendly.GUIDs
@@ -56,14 +55,11 @@ local CombatLogGetCurrentEventInfo			= _G.CombatLogGetCurrentEventInfo
 local GetUnitSpeed							= _G.GetUnitSpeed
 local GetSpellInfo							= _G.GetSpellInfo
 local GetPartyAssignment 					= _G.GetPartyAssignment	  
-local UnitIsUnit, UnitPlayerOrPetInRaid, UnitInAnyGroup, UnitPlayerOrPetInParty, UnitInRange, UnitLevel, UnitRace, UnitClass, UnitClassification, UnitExists, UnitIsConnected, UnitIsCharmed, UnitIsGhost, UnitIsDeadOrGhost, UnitIsFeignDeath, UnitIsPlayer, UnitPlayerControlled, UnitCanAttack, UnitIsEnemy, UnitAttackSpeed,
+local UnitIsUnit, UnitPlayerOrPetInRaid, UnitInAnyGroup, UnitPlayerOrPetInParty, UnitInRange, UnitLevel, UnitThreatSituation, UnitRace, UnitClass, UnitClassification, UnitExists, UnitIsConnected, UnitIsCharmed, UnitIsGhost, UnitIsDeadOrGhost, UnitIsFeignDeath, UnitIsPlayer, UnitPlayerControlled, UnitCanAttack, UnitIsEnemy, UnitAttackSpeed,
 	  UnitPowerType, UnitPowerMax, UnitPower, UnitName, UnitCanCooperate, UnitCreatureType, UnitCreatureFamily, UnitHealth, UnitHealthMax, UnitGetIncomingHeals, UnitGUID, UnitHasIncomingResurrection, UnitIsVisible, UnitDebuff, UnitCastingInfo, UnitChannelInfo =
-	  UnitIsUnit, UnitPlayerOrPetInRaid, UnitInAnyGroup, UnitPlayerOrPetInParty, UnitInRange, UnitLevel, UnitRace, UnitClass, UnitClassification, UnitExists, UnitIsConnected, UnitIsCharmed, UnitIsGhost, UnitIsDeadOrGhost, UnitIsFeignDeath, UnitIsPlayer, UnitPlayerControlled, UnitCanAttack, UnitIsEnemy, UnitAttackSpeed,
+	  UnitIsUnit, UnitPlayerOrPetInRaid, UnitInAnyGroup, UnitPlayerOrPetInParty, UnitInRange, UnitLevel, UnitThreatSituation, UnitRace, UnitClass, UnitClassification, UnitExists, UnitIsConnected, UnitIsCharmed, UnitIsGhost, UnitIsDeadOrGhost, UnitIsFeignDeath, UnitIsPlayer, UnitPlayerControlled, UnitCanAttack, UnitIsEnemy, UnitAttackSpeed,
 	  UnitPowerType, UnitPowerMax, UnitPower, UnitName, UnitCanCooperate, UnitCreatureType, UnitCreatureFamily, UnitHealth, UnitHealthMax, UnitGetIncomingHeals, UnitGUID, UnitHasIncomingResurrection, UnitIsVisible, UnitDebuff, UnitCastingInfo, UnitChannelInfo
-local UnitAura 								= _G.UnitAura	  
-	  
-local UnitThreatSituation					= _G.UnitThreatSituation
-local UnitDetailedThreatSituation			= _G.UnitDetailedThreatSituation
+local UnitAura 								= _G.UnitAura or _G.C_UnitAuras.GetAuraDataByIndex
 -------------------------------------------------------------------------------
 -- Remap
 -------------------------------------------------------------------------------
@@ -3009,47 +3005,32 @@ A.Unit = PseudoClass({
 			end 
 		end 
 	end, "UnitID"),
-	ThreatSituation							= Cache:Pass(function(self, otherunitID)  
-		-- @return number, number, number 
-		-- Returns: status (0 -> 3), percent of threat, value or threat 
+	ThreatSituation							= Cache:Pass(function(self, otherunit)  
+		-- @return number 
+		-- Returns: status (0 -> 3), percent of threat, value or threat 		
 		-- Nill-able: otherunit
 		local unitID 						= self.UnitID
-		if unitID then 
-			local GUID 						= UnitGUID(unitID)					
-			if GUID and TeamCachethreatData[GUID] then 
-				if otherunitID and not UnitIsUnit(otherunitID, TeamCachethreatData[GUID].unit) then 
-					-- By specified otherunitID
-					-- Note: I prefer avoid use this as much as it possible since less performance 
-					local _, status, scaledPercent, _, threatValue = UnitDetailedThreatSituation(unitID, otherunitID) 
-					if threatValue and threatValue < 0 then
-						threatValue = threatValue + 410065408
-					end					
-					return status or 0, scaledPercent or 0, threatValue or 0
-				else 
-					-- By own unit's target 
-					return TeamCachethreatData[GUID].status, TeamCachethreatData[GUID].scaledPercent, TeamCachethreatData[GUID].threatValue       
-				end 
-			end 
-		end 
-		return 0, 0, 0
+		return UnitThreatSituation(unitID, otherunit or "target") or 0	       
 	end, "UnitID"),
-	IsTanking 								= Cache:Pass(function(self, otherunitID, range)  
+	IsTanking 								= Cache:Pass(function(self, otherunit, range)  
 		-- @return boolean 
 		-- Nill-able: otherunit, range
-		local unitID 						= self.UnitID	
-		local ThreatSituation 				= self(unitID):ThreatSituation(otherunitID) -- cacheed defaultly own target but if need to check something additional here is otherunitID
-		return (A.IsInPvP and UnitIsUnit(unitID, (otherunitID or "target") .. "target")) or (not A.IsInPvP and ThreatSituation >= 3) or self(unitID):IsTankingAoE(range)	       
+		local unitID 						= self.UnitID
+		local ThreatThreshold 				= 3			
+		local ThreatSituation 				= self(unitID):ThreatSituation(otherunit or "target")
+		return ((A.IsInPvP and UnitIsUnit(unitID, (otherunit or "target") .. "target")) or (not A.IsInPvP and ThreatSituation >= ThreatThreshold)) or self(unitID):IsTankingAoE(range)	       
 	end, "UnitID"),
 	IsTankingAoE 							= Cache:Pass(function(self, range) 
 		-- @return boolean 
 		-- Nill-able: range
 		local unitID 						= self.UnitID
+		local ThreatThreshold 				= 3
 		for unit in pairs(ActiveUnitPlates) do
-			local ThreatSituation 		= self(unitID):ThreatSituation() -- cacheed defaultly own target 
-			if ((A.IsInPvP and UnitIsUnit(unitID, unit .. "target")) or (not A.IsInPvP and ThreatSituation >= 3)) and (not range or self(unit .. "target"):CanInterract(range)) then 
+			local ThreatSituation 			= self(unitID):ThreatSituation(unit)
+			if ((A.IsInPvP and UnitIsUnit(unitID, unit .. "target")) or (not A.IsInPvP and ThreatSituation >= ThreatThreshold)) and (not range or self(unit .. "target"):CanInterract(range)) then 
 				return true  
 			end
-		end       
+		end       		
 	end, "UnitID"),
 	IsPenalty								= Cache:Pass(function(self)  
 		-- @return boolean 
