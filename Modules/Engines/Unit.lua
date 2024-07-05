@@ -614,6 +614,10 @@ local AuraList = {
         -- 113860, -- Dark Soul: Misery
         -- 137639, -- Storm, Earth, and Fire
         -- 152173, -- Serenity
+		51271, -- Pillar of Frost
+		85696, -- Zealotry
+		85730, -- Deadly Calm
+		77801, -- Demon Soul
     },
     DamageBuffs_Melee = {        
         51690, -- Killing Spree
@@ -634,6 +638,9 @@ local AuraList = {
         -- 114050, -- Ascendance
         -- 137639, -- Storm, Earth, and Fire
         -- 152173, -- Serenity
+		51271, -- Pillar of Frost
+		85696, -- Zealotry
+		85730, -- Deadly Calm		
     },
     BurstHaste = {
         -- 90355, -- Ancient Hysteria
