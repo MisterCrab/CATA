@@ -12,7 +12,8 @@ local debugstack							= _G.debugstack
 local TMW 									= _G.TMW
 local CNDT 									= TMW.CNDT
 local Env 									= CNDT.Env
-local AuraTooltipNumber						= Env.AuraTooltipNumber
+--local AuraTooltipNumber					= Env.AuraTooltipNumber -- this is broken
+local AuraTooltipNumberPacked 				= Env.AuraTooltipNumberPacked
 local AuraVariableNumber 					= Env.AuraVariableNumber
 local strlowerCache  						= TMW.strlowerCache
 
@@ -3512,47 +3513,62 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID
 	    return self(unitID):Power() * 100 / self(unitID):PowerMax()
 	end, "UnitID"),
-	AuraTooltipNumber						= Cache:Wrap(function(self, spell, filter)
-		-- @return number 
-		-- Nill-able: filter
+	AuraTooltipNumberByIndex				= Cache:Wrap(function(self, spell, filter, caster, byID, kindKey, requestedIndex)
+		-- @return number
+		-- Arguments
+		-- kindKey @string "applications"|"isStealable"|"sourceUnit"|"isNameplateOnly"|"isHelpful"|"name"|"canApplyAura"|"isHarmful"|"isRaid"|"timeMod"|"auraInstanceID"|"nameplateShowAll"|"nameplateShowPersonal"|"icon"|"points"(returns table)|"isFromPlayerOrPlayerPet"|"expirationTime"|"duration"|"isBossAura"|"spellId"
+		-- 		This argument used to identify instance of aura on tooltip (can be 2+ identical auras applied but with different attributes, example: procs from same weapon enchants on both hands) 
+		--
+		-- requestedIndex @number 
+		--		This argument selects number by using index on tooltip (can return 0 on index which is not supposed to be zero, just skipping such index by adding +1 will help)
+		-- Nill-able: filter, byID, kindKey, requestedIndex
 		local unitID 						= self.UnitID
-		local spellName 
-		if type(spell) == "number" then 
-			spellName = A_GetSpellInfo(spell)
-		else 
-			spellName = spell
+		local filter 						= filter or "HELPFUL"
+		local auraData, foundData, name 
+		for i = 1, huge do
+			auraData = UnitAura(unitID, i, filter)
+			if not auraData then 
+				break 
+			elseif IsAuraEqual(auraData.name, auraData.spellId, AssociativeTables[spell], byID) then
+				foundData = auraData
+				name = strlowerCache[auraData.name]
+				break
+			end
+		end
+				
+		if foundData then 
+			-- Since LARGE_NUMBER_SEPERATOR is no longer correct and TMW has no fix for this we will use AuraTooltipNumberPacked function by index for now instead of AuraTooltipNumber
+			local kindKey = kindKey or ((filter == "HARMFUL" or filter == "PLAYER") and "isHarmful") or "isHelpful"
+			local requestedIndex = requestedIndex or 1
+			return AuraTooltipNumberPacked(unitID, name, kindKey, caster, requestedIndex)
 		end 
 		
-		if filter then 
-			return AuraTooltipNumber(unitID, strlowerCache[spellName], filter) or 0
-		else 
-			local duration = AuraTooltipNumber(unitID, strlowerCache[spellName], "HELPFUL") or 0
-			if duration == 0 then 
-				duration = AuraTooltipNumber(unitID, strlowerCache[spellName], "HARMFUL") or 0
-			end 
-			return duration or 0
-		end 
+		return 0
 	end, "UnitGUID"),
-	AuraVariableNumber						= Cache:Wrap(function(self, spell, filter)
-		-- @return number 
-		-- Nill-able: filter
+	AuraVariableNumber						= Cache:Wrap(function(self, spell, filter, caster, byID)
+		-- @return number
+		-- Nill-able: filter, caster, byID
 		local unitID 						= self.UnitID
-		local spellName 
-		if type(spell) == "number" then 
-			spellName = A_GetSpellInfo(spell)
-		else 
-			spellName = spell
-		end 
+		local filter 						= filter or "HELPFUL"
+		local auraData, foundData
+		for i = 1, huge do
+			auraData = UnitAura(unitID, i, filter)
+			if not auraData then 
+				break 
+			elseif IsAuraEqual(auraData.name, auraData.spellId, AssociativeTables[spell], byID) and (not caster or UnitIsUnit("player", auraData.sourceUnit)) then
+				foundData = auraData
+				break
+			end
+		end
 		
-		if filter then 
-			return AuraVariableNumber(unitID, strlowerCache[spellName], filter) or 0
-		else 
-			local duration = AuraVariableNumber(unitID, strlowerCache[spellName], "HELPFUL") or 0
-			if duration == 0 then 
-				duration = AuraVariableNumber(unitID, strlowerCache[spellName], "HARMFUL") or 0
-			end 
-			return duration or 0
-		end 
+		if foundData then 
+			for i = 1, #foundData.points do
+				local v = foundData.points[i]
+				if v and v > 0 then return v end
+			end
+		end
+		
+		return 0
 	end, "UnitGUID"),
 	DeBuffCyclone 							= Cache:Pass(function(self)
 		-- @return number 
@@ -3569,7 +3585,7 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID		
 		local filter
 		if caster then 
-			filter = "HARMFUL PLAYER"
+			filter = "PLAYER"
 		else 
 			filter = "HARMFUL"
 		end 
@@ -3609,7 +3625,7 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID		
 		local filter
 		if caster then 
-			filter = "HARMFUL PLAYER"
+			filter = "PLAYER"
 		else 
 			filter = "HARMFUL"
 		end 
@@ -3668,7 +3684,7 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID		
 		local filter
 		if caster then 
-			filter = "HARMFUL PLAYER"
+			filter = "PLAYER"
 		else 
 			filter = "HARMFUL"
 		end 
@@ -3710,7 +3726,7 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID
 		local filter
 		if caster then 
-			filter = "HARMFUL PLAYER"
+			filter = "PLAYER"
 		else 
 			filter = "HARMFUL"
 		end 
@@ -3742,9 +3758,9 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID
 		local filter
 		if debuff then 
-			filter = "HARMFUL PLAYER"
+			filter = "PLAYER"
 		else 
-			filter = "HELPFUL PLAYER"
+			filter = "HELPFUL"
 		end 
 		
 		local duration = 0
@@ -3782,7 +3798,7 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID		
 		local filter
 		if caster then 
-			filter = "HELPFUL PLAYER"
+			filter = "HELPFUL"
 		else 
 			filter = "HELPFUL"
 		end 
@@ -3818,7 +3834,7 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID		
 		local filter
 		if caster then 
-			filter = "HELPFUL PLAYER"
+			filter = "HELPFUL"
 		else 
 			filter = "HELPFUL"
 		end 
@@ -3851,7 +3867,7 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID	
 		local filter						= "HELPFUL"
 		if caster then 
-			filter = "HELPFUL PLAYER"
+			filter = "HELPFUL"
 		end 
 
 		local _, spellName, spellID, spellDuration, spellExpirationTime		
@@ -3881,7 +3897,7 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID	
 		local filter 						= "HELPFUL"
 		if caster then 
-			filter = "HELPFUL PLAYER"
+			filter = "HELPFUL"
 		end 
 		local remain_dur, total_dur 		= 0, 0
 		
@@ -3917,7 +3933,7 @@ A.Unit = PseudoClass({
 		local unitID 						= self.UnitID	
 		local filter 						= "HELPFUL"
 		if caster then 
-			filter = "HELPFUL PLAYER"
+			filter = "HELPFUL"
 		end 
 		
 		local _, spellName, spellID, spellCount		
