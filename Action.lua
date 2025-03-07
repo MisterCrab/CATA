@@ -1,5 +1,5 @@
 --- 
-local DateTime 														= "26.12.2024"
+local DateTime 														= "08.03.2025"
 ---
 local pcall, ipairs, pairs, type, assert, error, setfenv, getmetatable, setmetatable, loadstring, next, unpack, select, _G, coroutine, table, math, string = 
 	  pcall, ipairs, pairs, type, assert, error, setfenv, getmetatable, setmetatable, loadstring, next, unpack, select, _G, coroutine, table, math, string
@@ -14719,7 +14719,7 @@ function Action.ToggleMainUI()
 			--	-- Druid in Classic hasn't ressurect
 			--	SelectResurrects:Disable()
 			--	SelectResurrects:SetChecked(false, true) -- only internal 
-			--	specDB[db].SelectResurrects = false 
+			--	specDB.SelectResurrects = false 
 			--end 
 		end -- isHealer END 
 
