@@ -14261,7 +14261,7 @@ function Action.ToggleMainUI()
 				if TableKey == nil or TableKey == "" then 
 					Action.Print(L["TAB"][tabName]["KEYERROR"]) 
 					return 
-				elseif not Action[Action.PlayerClass][TableKey] then 
+				elseif not Action[specID][TableKey] then 
 					Action.Print(TableKey .. " " .. L["TAB"][tabName]["KEYERRORNOEXIST"]) 
 					return 
 				end 				
